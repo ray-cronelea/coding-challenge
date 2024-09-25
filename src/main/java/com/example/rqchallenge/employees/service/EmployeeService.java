@@ -2,7 +2,7 @@ package com.example.rqchallenge.employees.service;
 
 import com.example.rqchallenge.employees.model.Employee;
 import com.example.rqchallenge.employees.model.EmployeeResponse;
-import com.example.rqchallenge.employees.model.EmployeeServiceException;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,14 +10,14 @@ import java.net.URI;
 import java.util.List;
 import java.util.function.Supplier;
 
-
-public class DefaultEmployeeService implements IEmployeeService {
+@Service
+public class EmployeeService implements IEmployeeService {
 
     private static final String ROOT_URL = "https://dummy.restapiexample.com/api/v1";
 
     private final RestTemplate restTemplate;
 
-    public DefaultEmployeeService(RestTemplate restTemplate) {
+    public EmployeeService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -27,8 +27,14 @@ public class DefaultEmployeeService implements IEmployeeService {
     }
 
     @Override
-    public Employee getEmployee(int id) throws EmployeeServiceException {
-        return executeGetRequest(ROOT_URL + "/employee/" + id);
+    public Employee getEmployee(int id) throws EmployeeServiceException, EmployeeNotFoundException {
+        Employee employee = executeGetRequest(ROOT_URL + "/employee/" + id);
+
+        if (employee == null) {
+            throw new EmployeeNotFoundException(id);
+        }
+
+        return employee;
     }
 
     @Override

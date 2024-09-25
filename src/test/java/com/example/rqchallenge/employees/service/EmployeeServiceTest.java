@@ -1,9 +1,7 @@
 package com.example.rqchallenge.employees.service;
 
 import com.example.rqchallenge.employees.model.Employee;
-import com.example.rqchallenge.employees.model.EmployeeServiceException;
 import com.example.rqchallenge.employees.model.EmployeeResponse;
-import com.example.rqchallenge.employees.service.DefaultEmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,16 +19,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DefaultEmployeeServiceTest {
+class EmployeeServiceTest {
 
-    DefaultEmployeeService employeeService;
+    EmployeeService employeeService;
 
     @Mock
     RestTemplate restTemplate;
 
     @BeforeEach
     void beforeEach(){
-        employeeService = new DefaultEmployeeService(restTemplate);
+        employeeService = new EmployeeService(restTemplate);
     }
 
     @Test
@@ -44,7 +42,7 @@ class DefaultEmployeeServiceTest {
     }
 
     @Test
-    void getEmployeeReturnsAnEmployee() throws EmployeeServiceException {
+    void getEmployeeReturnsAnEmployee() throws EmployeeServiceException, EmployeeNotFoundException {
         Employee expectedEmployee = anEmployee().withName("Jack").withAge(61).withId(1).withSalary(10000).build();
 
         when(restTemplate.getForObject("https://dummy.restapiexample.com/api/v1/employee/1", EmployeeResponse.class))
@@ -88,6 +86,18 @@ class DefaultEmployeeServiceTest {
         EmployeeServiceException exception = assertThrows(EmployeeServiceException.class, () -> employeeService.getEmployee(1));
 
         assertEquals("Request was not successful. Status: failed", exception.getMessage());
+
+    }
+
+    @Test
+    void getEmployeeReturnsNothing() {
+
+        when(restTemplate.getForObject("https://dummy.restapiexample.com/api/v1/employee/1", EmployeeResponse.class))
+                .thenReturn(new EmployeeResponse("success", null));
+
+        EmployeeNotFoundException exception = assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployee(1));
+
+        assertEquals("Could not find employee with id 1", exception.getMessage());
 
     }
 

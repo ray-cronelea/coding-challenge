@@ -1,10 +1,11 @@
 package com.example.rqchallenge.employees.controller;
 
 import com.example.rqchallenge.employees.model.Employee;
+import com.example.rqchallenge.employees.service.EmployeeNotFoundException;
+import com.example.rqchallenge.employees.service.EmployeeServiceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,24 +13,24 @@ import java.util.Map;
 public interface IEmployeeController {
 
     @GetMapping()
-    ResponseEntity<List<Employee>> getAllEmployees() throws IOException;
+    ResponseEntity<List<Employee>> getAllEmployees() throws EmployeeServiceException;
 
     @GetMapping("/search/{searchString}")
-    ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String searchString);
+    ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String searchString) throws EmployeeServiceException;
 
     @GetMapping("/{id}")
-    ResponseEntity<Employee> getEmployeeById(@PathVariable String id);
+    ResponseEntity<Employee> getEmployeeById(@PathVariable String id) throws EmployeeNotFoundException, EmployeeServiceException;
 
     @GetMapping("/highestSalary")
-    ResponseEntity<Integer> getHighestSalaryOfEmployees();
+    ResponseEntity<Integer> getHighestSalaryOfEmployees() throws EmployeeServiceException;
 
     @GetMapping("/topTenHighestEarningEmployeeNames")
-    ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames();
+    ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() throws EmployeeServiceException;
 
     @PostMapping()
-    ResponseEntity<Employee> createEmployee(@RequestBody Map<String, Object> employeeInput);
+    ResponseEntity<Employee> createEmployee(@RequestBody Map<String, Object> employeeInput) throws EmployeeServiceException;
 
     @DeleteMapping("/{id}")
-    ResponseEntity<String> deleteEmployeeById(@PathVariable String id);
+    ResponseEntity<String> deleteEmployeeById(@PathVariable String id) throws EmployeeServiceException;
 
 }
