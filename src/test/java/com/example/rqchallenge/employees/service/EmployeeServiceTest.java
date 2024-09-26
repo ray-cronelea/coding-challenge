@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.Map;
 
 import static com.example.rqchallenge.employees.EmployeeTestDataBuilder.anEmployee;
 import static com.example.rqchallenge.employees.EmployeeTestDataBuilder.someEmployees;
@@ -55,10 +56,10 @@ class EmployeeServiceTest {
     void addEmployeeAndReturnCreatedEmployee() throws EmployeeServiceException {
         Employee expectedEmployee = anEmployee().withName("Jack").withAge(61).withId(1).withSalary(10000).build();
 
-        when(restTemplate.postForObject("https://dummy.restapiexample.com/api/v1/create", expectedEmployee, EmployeeResponse.class))
+        when(restTemplate.postForObject("https://dummy.restapiexample.com/api/v1/create", Map.of("name", "Jack", "salary", "10000", "age", "61"), EmployeeResponse.class))
                 .thenReturn(new EmployeeResponse<>("success", expectedEmployee));
 
-        assertEquals(expectedEmployee, employeeService.add(expectedEmployee));
+        assertEquals(expectedEmployee, employeeService.add("Jack", 10000, 61));
     }
 
     @Test

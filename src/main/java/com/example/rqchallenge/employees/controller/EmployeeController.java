@@ -2,8 +2,8 @@ package com.example.rqchallenge.employees.controller;
 
 import com.example.rqchallenge.employees.model.Employee;
 import com.example.rqchallenge.employees.service.EmployeeNotFoundException;
-import com.example.rqchallenge.employees.service.EmployeeService;
 import com.example.rqchallenge.employees.service.EmployeeServiceException;
+import com.example.rqchallenge.employees.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +12,16 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.rqchallenge.employees.controller.DataUtils.deserializeEmployee;
+import static com.example.rqchallenge.employees.controller.DataUtils.parseInteger;
 import static java.lang.String.format;
 
 @Controller
 public class EmployeeController implements IEmployeeController {
 
-    private final EmployeeService employeeService;
+    private final IEmployeeService employeeService;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(IEmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
@@ -55,8 +55,10 @@ public class EmployeeController implements IEmployeeController {
 
     @Override
     public ResponseEntity<Employee> createEmployee(Map<String, Object> employeeInput) throws EmployeeServiceException {
-        Employee employee = deserializeEmployee(employeeInput);
-        return new ResponseEntity<>(employeeService.add(employee), HttpStatus.CREATED);
+        String name = (String) employeeInput.get("name");
+        int salary = parseInteger((String) employeeInput.get("salary"));
+        int age = parseInteger((String) employeeInput.get("age"));
+        return new ResponseEntity<>(employeeService.add(name, salary, age), HttpStatus.CREATED);
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface IEmployeeService {
 
     Employee getEmployee(int id) throws EmployeeServiceException, EmployeeNotFoundException;
 
-    Employee add(Employee employee) throws EmployeeServiceException;
+    Employee add(String name, int salary, int age) throws EmployeeServiceException;
 
     void delete(int id) throws EmployeeServiceException;
 

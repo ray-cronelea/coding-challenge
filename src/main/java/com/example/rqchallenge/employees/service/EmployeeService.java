@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 @Service
@@ -38,9 +39,10 @@ public class EmployeeService implements IEmployeeService {
     }
 
     @Override
-    public Employee add(Employee employee) throws EmployeeServiceException {
+    public Employee add(String name, int salary, int age) throws EmployeeServiceException {
         String url = ROOT_URL + "/create";
-        return executePostRequest(url, employee);
+        Map<String, String> params = Map.of("name", name, "salary", String.valueOf(salary), "age", String.valueOf(age));
+        return executePostRequest(url, params);
     }
 
     @Override
@@ -53,8 +55,8 @@ public class EmployeeService implements IEmployeeService {
         }
     }
 
-    private <T> T executePostRequest(String url, Employee employee) throws EmployeeServiceException {
-        Supplier<EmployeeResponse<T>> responseSupplier = () -> restTemplate.postForObject(url, employee, EmployeeResponse.class);
+    private <T> T executePostRequest(String url, Map<String, String> params) throws EmployeeServiceException {
+        Supplier<EmployeeResponse<T>> responseSupplier = () -> restTemplate.postForObject(url, params, EmployeeResponse.class);
         return executeRequestWithErrorHandling(responseSupplier);
     }
 
