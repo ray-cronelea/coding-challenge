@@ -1,5 +1,6 @@
 package com.example.rqchallenge;
 
+import com.example.rqchallenge.employees.EmployeeTestUtils;
 import com.example.rqchallenge.employees.model.Employee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,26 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Import(TestEmployeeServiceConfiguration.class)
+@Import(TestInMemEmployeeServiceConfiguration.class)
 @AutoConfigureMockMvc
 class RqChallengeApplicationTests {
 
-    private static final Comparator<? super Employee> COMPARE_EMPLOYEE_IGNORING_ID = (Comparator<Employee>) (e1, e2) -> {
-
-        if (!e1.getName().equals(e2.getName())) {
-            return -1;
-        }
-
-        if (e1.getSalary() != (e2.getSalary())) {
-            return -1;
-        }
-
-        if (e1.getAge() != (e2.getAge())) {
-            return -1;
-        }
-
-        return 0;
-    };
     @Autowired
     private MockMvc mockMvc;
 
@@ -132,29 +116,12 @@ class RqChallengeApplicationTests {
         List<Employee> actualEmployees = objectMapper.readValue(jsonContent, objectMapper.getTypeFactory().constructCollectionType(List.class, Employee.class));
 
         assertThat(actualEmployees)
-                .usingElementComparator(COMPARE_EMPLOYEE_IGNORING_ID)
+                .usingElementComparator(EmployeeTestUtils.COMPARE_EMPLOYEE_IGNORING_ID)
                 .containsOnly(
                         anEmployee().withName("Neila Curry").withSalary(9000).withAge(34).build(),
                         anEmployee().withName("Neil Dalton").withSalary(3000).withAge(35).build()
                 );
 
-    }
-
-    private Employee assertEmployeeCreatedSuccessfully(String name, String age, String salary) throws Exception {
-        String jsonContent = mockMvc.perform(post("/")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(
-                                Map.of(
-                                        "name", name,
-                                        "age", age,
-                                        "salary", salary
-                                )
-                        )))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse().getContentAsString();
-
-        return objectMapper.readValue(jsonContent, Employee.class);
     }
 
     private void insertTestData() throws Exception {
@@ -177,6 +144,23 @@ class RqChallengeApplicationTests {
         assertEmployeeCreatedSuccessfully("Jaden Lindsey", "29", "3000");
         assertEmployeeCreatedSuccessfully("Bilal Dyer", "46", "4000");
         assertEmployeeCreatedSuccessfully("Scarlett Love", "39", "13000");
+    }
+
+    private Employee assertEmployeeCreatedSuccessfully(String name, String age, String salary) throws Exception {
+        String jsonContent = mockMvc.perform(post("/")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(
+                                Map.of(
+                                        "name", name,
+                                        "age", age,
+                                        "salary", salary
+                                )
+                        )))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse().getContentAsString();
+
+        return objectMapper.readValue(jsonContent, Employee.class);
     }
 
 

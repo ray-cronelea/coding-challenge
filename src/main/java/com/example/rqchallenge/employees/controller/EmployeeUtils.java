@@ -6,9 +6,14 @@ import java.util.Comparator;
 import java.util.List;
 
 public class EmployeeUtils {
+
+    private EmployeeUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static List<Employee> getEmployeesByNameSearch(List<Employee> employees, String searchString) {
         return employees.stream()
-                .filter((employee) -> employee.getName().contains(searchString))
+                .filter(employee -> employee.getName().contains(searchString))
                 .toList();
     }
 

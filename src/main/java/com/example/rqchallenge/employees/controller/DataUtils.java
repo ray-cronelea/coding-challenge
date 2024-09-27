@@ -5,9 +5,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class DataUtils {
 
-    public static int parseInteger(String id) throws ResponseStatusException {
+    private DataUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static int parseInteger(String input) throws ResponseStatusException {
         try {
-            return Integer.parseInt(id);
+            return Integer.parseInt(input);
         } catch (NumberFormatException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
